@@ -116,24 +116,30 @@ const AppSchema = new mongoose.Schema(
           .exec()
       },
 
-      async updateEvent(appId, eventId, event) {
+      async updateEvent(appId, owner, eventId, event) {
+        const partialUpdateSet = {}
+        if (event && Object.keys(event)) {
+          for (let key of Object.keys(event)) {
+            partialUpdateSet[`events.$.${key}`] = event[key]
+          }
+        }
         return await this.findOneAndUpdate(
           { _id: appId, 'events._id': eventId },
-          { $set: { 'events.$': event } },
+          { $set: partialUpdateSet },
           { new: true, runValidators: true }
         )
-          .where('status')
-          .equals(APP_STATUS.ACTIVE)
+          .where({ owner, status: APP_STATUS.ACTIVE, 'events.event': { $ne: event.event } })
           .lean()
           .exec()
       },
 
-      async deleteEvent(appId, eventId) {
+      async deleteEvents(appId, owner, eventIds) {
         return await this.findByIdAndUpdate(
           appId,
-          { $pull: { events: { _id: eventId } } },
+          { $pull: { events: { _id: { $in: eventIds } } } },
           { new: true }
         )
+          .where({ owner, status: APP_STATUS.ACTIVE })
           .lean()
           .exec()
       },

@@ -256,11 +256,76 @@ async function addEvent({ params, body, error, store }) {
   }
 }
 
-async function updateEvent({ params, body, error, store }) {}
+async function updateEvent({ params, body, error, store }) {
+  const appId = params.id
+  const owner = store.user.id
+  const eventId = params.eventId
+  const { event, selectorType, selector, text, trigger, page } = body
+  try {
+    const app = await AppModel.updateEvent(appId, owner, eventId, {
+      event,
+      selectorType,
+      selector,
+      text,
+      trigger,
+      page
+    })
+    if (app) {
+      return {
+        success: true,
+        code: HttpStatus.OK,
+        app: {
+          ...app,
+          status: APP_STATUS_CODES[app.status]
+        }
+      }
+    }
+    return error(HttpStatus.NOT_FOUND, {
+      success: false,
+      code: APP_CONTROLLER_ERROR_CODES.APP_NOT_FOUND,
+      message: 'App not found'
+    })
+  } catch (err) {
+    console.error(err.message)
+    return error(HttpStatus.INTERNAL_SERVER_ERROR, {
+      success: false,
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Something went wrong.'
+    })
+  }
+}
 
-async function deleteEvents({ params, body, error, store }) {}
-
-async function fetchEvents({ params, error, store }) {}
+async function deleteEvents({ params, body, error, store }) {
+  const appId = params.id
+  const owner = store.user.id
+  const eventIds = body.eventIds
+  try {
+    const app = await AppModel.deleteEvents(appId, owner, eventIds)
+    if (app) {
+      return {
+        success: true,
+        code: HttpStatus.OK,
+        app: {
+          ...app,
+          status: APP_STATUS_CODES[app.status],
+          deletedEvents: eventIds
+        }
+      }
+    }
+    return error(HttpStatus.NOT_FOUND, {
+      success: false,
+      code: APP_CONTROLLER_ERROR_CODES.APP_NOT_FOUND,
+      message: 'App not found'
+    })
+  } catch (err) {
+    console.error(err.message)
+    return error(HttpStatus.INTERNAL_SERVER_ERROR, {
+      success: false,
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Something went wrong.'
+    })
+  }
+}
 
 async function fetchApps({ error, store }) {
   try {
@@ -292,6 +357,5 @@ export default {
   addEvent,
   updateEvent,
   deleteEvents,
-  fetchEvents,
   fetchApps
 }

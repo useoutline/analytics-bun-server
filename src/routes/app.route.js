@@ -7,11 +7,10 @@ function registerAppRoutes(app, group) {
     app.post('/create', AppController.createApp)
     app.get('/:id', AppController.getApp)
     app.delete('/:id', AppController.deleteApp)
-    app.put('/:id/update', AppController.updateAppDetails)
-    app.post('/:id/events/add', AppController.addEvent)
-    app.put('/:id/events/:eventId/update', AppController.updateEvent)
-    app.delete('/:id/events/delete', AppController.deleteEvents)
-    app.get('/:id/events', AppController.fetchEvents)
+    app.patch('/:id/update', AppController.updateAppDetails)
+    app.put('/:id/events/add', AppController.addEvent)
+    app.patch('/:id/events/:eventId/update', AppController.updateEvent)
+    app.put('/:id/events/delete', AppController.deleteEvents)
     return app
   })
 
