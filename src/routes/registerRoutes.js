@@ -1,6 +1,6 @@
 import HttpStatus from 'http-status'
 import { registerUserRoutes } from '@/routes/user.route'
-// import { registerTrackingRoutes } from '@/routes/tracking.route'
+import { registerTrackingRoutes } from '@/routes/tracking.route'
 import { registerAppRoutes } from '@/routes/app.route'
 // import { registerStatsRoutes } from '@/routes/stats.route'
 
@@ -21,7 +21,7 @@ function registerRoutes(app) {
   })
 
   registerUserRoutes(app, consoleUrlPrefixV1)
-  // registerTrackingRoutes(app, analyticsUrlPrefixV1)
+  registerTrackingRoutes(app, analyticsUrlPrefixV1)
   registerAppRoutes(app, consoleUrlPrefixV1)
   // registerStatsRoutes(app, consoleUrlPrefixV1)
 

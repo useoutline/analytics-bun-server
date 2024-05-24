@@ -6,12 +6,9 @@ function getUserAgentDetails(headers) {
   const outlineBrowser = headers['x-outline-browser']
   const browserDetails = Bowser.parse(useragent)
   return {
-    browser: {
-      name: outlineBrowser || browserDetails.browser.name,
-      version: browserDetails.browser.version
-    },
-    os: browserDetails.os,
-    platform: browserDetails.platform
+    browser: outlineBrowser || browserDetails.browser.name || undefined,
+    os: browserDetails.os.name || undefined,
+    platform: browserDetails.platform.type || undefined
   }
 }
 
@@ -22,30 +19,27 @@ async function getLocationFromIp(ip) {
     const ipDetails = lookup.get(ip)
     if (ipDetails) {
       return {
-        city: ipDetails.city?.names?.en || null,
+        city: ipDetails.city?.names?.en || undefined,
         country: {
-          name: ipDetails.country?.names?.en || null,
-          code: ipDetails.country?.iso_code || null
+          name: ipDetails.country?.names?.en || undefined,
+          code: ipDetails.country?.iso_code || undefined
         },
-        continent: {
-          name: ipDetails.continent?.names?.en || null,
-          code: ipDetails.continent?.code || null
-        },
+        continent: ipDetails.continent?.code || undefined,
         coords:
           ipDetails.location?.latitude && ipDetails.location?.longitude
             ? {
                 type: 'Point',
                 coordinates: [ipDetails.location?.longitude, ipDetails.location?.latitude]
               }
-            : null,
-        timezone: ipDetails.location?.time_zone || null
+            : undefined,
+        timezone: ipDetails.location?.time_zone || undefined
       }
     }
   }
   return null
 }
 
-function getBrowsingData({ browser, os, meta, platform, ipDetails }) {
+function getBrowsingData({ browser, os, platform, ipDetails }) {
   return {
     browser,
     os,
@@ -54,8 +48,7 @@ function getBrowsingData({ browser, os, meta, platform, ipDetails }) {
     country: ipDetails?.country,
     continent: ipDetails?.continent,
     coords: ipDetails?.coords,
-    timezone: ipDetails?.timezone,
-    meta
+    timezone: ipDetails?.timezone
   }
 }
 

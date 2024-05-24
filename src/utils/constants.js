@@ -15,6 +15,23 @@ export const APP_MODEL_ERRORS = {
   MAX_APPS_REACHED: 'MAX_APPS_REACHED'
 }
 
+export const EVENT_MODEL_ERRORS = {
+  APP_REQUIRED: 'APP_REQUIRED',
+  USER_REQUIRED: 'USER_REQUIRED',
+  EVENT_REQUIRED: 'EVENT_REQUIRED'
+}
+
+export const EVENT_TYPES = {
+  internal: 1,
+  external: 2,
+  session: 3,
+  'tag-based': 4,
+  1: 'internal',
+  2: 'external',
+  3: 'session',
+  4: 'tag-based'
+}
+
 export const OTP_MESSAGES = {
   INVALID: 'INVALID',
   EXPIRED: 'EXPIRED',
