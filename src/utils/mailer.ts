@@ -13,7 +13,23 @@ const transporter = createTransport({
   logger: true
 })
 
-async function sendMail({ recipientEmail, subject, text, html, senderName, senderEmail }) {
+type SendMailProps = {
+  recipientEmail: string
+  subject: string
+  text: string
+  html: string
+  senderName?: string
+  senderEmail?: string
+}
+
+async function sendMail({
+  recipientEmail,
+  subject,
+  text,
+  html,
+  senderName,
+  senderEmail
+}: SendMailProps) {
   const info = await transporter.sendMail({
     to: recipientEmail,
     from: {
