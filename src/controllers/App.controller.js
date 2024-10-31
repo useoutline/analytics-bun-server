@@ -1,5 +1,5 @@
 import AppModel from '@/models/App.model'
-import { APP_CONTROLLER_ERROR_CODES, APP_STATUS, APP_STATUS_CODES } from '@/utils/constants'
+import { APP_CONTROLLER_ERROR_CODES, APP_STATUS } from '@/utils/constants'
 import HttpStatus from 'http-status'
 import isURL from 'validator/lib/isURL'
 import { APP_MODEL_ERRORS } from '@/utils/constants'
@@ -73,7 +73,7 @@ async function getApp({ params, error, store }) {
         code: HttpStatus.OK,
         app: {
           ...app,
-          status: APP_STATUS_CODES[app.status]
+          status: APP_STATUS[app.status]
         }
       }
     }
@@ -103,7 +103,7 @@ async function deleteApp({ params, error, store }) {
         code: HttpStatus.OK,
         app: {
           _id: app._id,
-          status: APP_STATUS_CODES[app.status]
+          status: APP_STATUS[app.status]
         }
       }
     }
@@ -157,7 +157,7 @@ async function updateAppDetails({ params, body, error, store }) {
         code: HttpStatus.OK,
         app: {
           ...app,
-          status: APP_STATUS_CODES[app.status]
+          status: APP_STATUS[app.status]
         }
       }
     }
@@ -202,7 +202,7 @@ async function addEvent({ params, body, error, store }) {
         code: HttpStatus.OK,
         app: {
           ...app,
-          status: APP_STATUS_CODES[app.status]
+          status: APP_STATUS[app.status]
         }
       }
     }
@@ -276,7 +276,7 @@ async function updateEvent({ params, body, error, store }) {
         code: HttpStatus.OK,
         app: {
           ...app,
-          status: APP_STATUS_CODES[app.status]
+          status: APP_STATUS[app.status]
         }
       }
     }
@@ -307,7 +307,7 @@ async function deleteEvents({ params, body, error, store }) {
         code: HttpStatus.OK,
         app: {
           ...app,
-          status: APP_STATUS_CODES[app.status],
+          status: APP_STATUS[app.status],
           deletedEvents: eventIds
         }
       }
@@ -336,7 +336,7 @@ async function fetchApps({ error, store }) {
       code: HttpStatus.OK,
       apps: apps.map((app) => ({
         ...app,
-        status: APP_STATUS_CODES[app.status]
+        status: APP_STATUS[app.status]
       }))
     }
   } catch (err) {
