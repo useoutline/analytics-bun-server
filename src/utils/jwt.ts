@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 
 const JWT = {
   ACCESS: {
@@ -7,15 +7,15 @@ const JWT = {
   }
 }
 
-function signJwt(data) {
+function signJwt(data: string | object) {
   const privateKey = JWT.ACCESS.privateKey
   const expiresIn = '90d'
-  return jwt.sign(data, privateKey, { expiresIn, algorithm: 'RS256' })
+  return sign(data, privateKey, { expiresIn, algorithm: 'RS256' })
 }
 
-function verifyJwt(token) {
+function verifyJwt(token: string) {
   const publicKey = JWT.ACCESS.publicKey
-  return jwt.verify(token, publicKey, { algorithms: ['RS256'] })
+  return verify(token, publicKey, { algorithms: ['RS256'] })
 }
 
 export { signJwt, verifyJwt }
