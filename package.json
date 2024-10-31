@@ -19,23 +19,23 @@
     "chalk": "^5.3.0",
     "elysia": "latest",
     "elysia-rate-limit": "^2.2.0",
-    "http-status": "^1.7.4",
+    "http-status": "^1.8.1",
     "http-status-code": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
-    "maxmind": "^4.3.20",
-    "mongoose": "^8.4.1",
-    "nanoid": "^5.0.7",
-    "nodemailer": "^6.9.13",
+    "maxmind": "^4.3.22",
+    "mongoose": "^8.7.3",
+    "nanoid": "^5.0.8",
+    "nodemailer": "^6.9.16",
     "targz": "^1.0.1",
     "validator": "^13.12.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "bun-types": "latest",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "pm2": "^5.4.0",
-    "prettier": "^3.3.1"
+    "pm2": "^5.4.2",
+    "prettier": "^3.3.3"
   },
   "module": "src/index.js"
 }

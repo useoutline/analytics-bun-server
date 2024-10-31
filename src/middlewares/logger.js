@@ -10,7 +10,7 @@ export function logger() {
     .onRequest((ctx) => {
       ctx.store = { ...ctx.store, beforeTime: process.hrtime.bigint() }
     })
-    .onResponse({ as: 'global' }, (ctx) => {
+    .onAfterResponse({ as: 'global' }, (ctx) => {
       const logStr = []
       logStr.push(ctx.request.method)
       logStr.push(new URL(ctx.request.url).pathname)
