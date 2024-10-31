@@ -1,6 +1,7 @@
 import { createTransport } from 'nodemailer'
+import type SMTPPool from 'nodemailer/lib/smtp-pool'
 
-const transporter = createTransport({
+const transportOptions = {
   host: process.env.MAILER_HOST,
   port: process.env.MAILER_PORT,
   auth: {
@@ -10,8 +11,11 @@ const transporter = createTransport({
   tls: {
     rejectUnauthorized: false
   },
-  logger: true
-})
+  logger: true,
+  pool: true
+} as SMTPPool.Options
+
+const transporter = createTransport(transportOptions)
 
 type SendMailProps = {
   recipientEmail: string

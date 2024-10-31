@@ -3,7 +3,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "module": "ESNext",
-    "target": "ES2023"
+    "module": "Preserve",
+    "target": "ES2023",
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   }
 }

@@ -34,6 +34,7 @@
     "@types/bun": "latest",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/nodemailer": "^6.4.16",
+    "@types/targz": "^1.0.4",
     "bun-types": "latest",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",

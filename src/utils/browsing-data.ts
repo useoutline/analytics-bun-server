@@ -1,5 +1,6 @@
 import Bowser from 'bowser'
 import maxmind from 'maxmind'
+import type { CityResponse } from 'maxmind'
 
 function getUserAgentDetails(headers) {
   const useragent = headers['user-agent']
@@ -12,10 +13,14 @@ function getUserAgentDetails(headers) {
   }
 }
 
-async function getLocationFromIp(ip) {
+async function getLocationFromIp(
+  ip:
+    | `${number}.${number}.${number}.${number}`
+    | `${string}:${string}:${string}:${string}:${string}:${string}:${string}:${string}`
+) {
   if (ip) {
     const dbPath = Bun.resolveSync('./maxmind/GeoLite2-City.mmdb', process.cwd())
-    const lookup = await maxmind.open(dbPath)
+    const lookup = await maxmind.open<CityResponse>(dbPath)
     const ipDetails = lookup.get(ip)
     if (ipDetails) {
       return {
@@ -39,7 +44,14 @@ async function getLocationFromIp(ip) {
   return null
 }
 
-function getBrowsingData({ browser, os, platform, ipDetails }) {
+type BrowsingDataProps = {
+  browser: string
+  os: string
+  platform: string
+  ipDetails: Awaited<ReturnType<typeof getLocationFromIp>>
+}
+
+function getBrowsingData({ browser, os, platform, ipDetails }: BrowsingDataProps) {
   return {
     browser,
     os,
@@ -52,9 +64,18 @@ function getBrowsingData({ browser, os, platform, ipDetails }) {
   }
 }
 
+type Page = {
+  fullpath: string
+  path: string
+  hash?: string
+  title: string
+  meta?: Record<string, string>
+  query?: Record<string, string>
+}
+
 function getPageData(requestBody) {
   const pageUrl = new URL(requestBody.page.fullpath)
-  const page = {
+  const page: Page = {
     fullpath: requestBody.page.fullpath,
     path: pageUrl.pathname,
     hash: pageUrl.hash,
@@ -67,11 +88,19 @@ function getPageData(requestBody) {
   return page
 }
 
+type UTM = {
+  utm_source?: string
+  utm_medium?: string
+  utm_campaign?: string
+  utm_term?: string
+  utm_content?: string
+}
+
 function getUtmData(requestBody) {
   const pageUrl = new URL(requestBody.page.fullpath)
   if (pageUrl.search.trim().length) {
     const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']
-    const utm = {}
+    const utm: UTM = {}
     pageUrl.searchParams.forEach((value, key) => {
       if (utmParams.includes(key)) {
         utm[key] = value
@@ -79,7 +108,7 @@ function getUtmData(requestBody) {
     })
     return utm
   }
-  return {}
+  return {} as UTM
 }
 
 export { getUserAgentDetails, getLocationFromIp, getBrowsingData, getPageData, getUtmData }

@@ -1,4 +1,4 @@
-import fs from 'node:fs/promises'
+import { readdir, rm, stat, copyFile } from 'node:fs/promises'
 import path from 'node:path'
 import { decompressTargz } from '@/utils/targz'
 
@@ -18,16 +18,16 @@ async function downloadMaxmindDB() {
     return
   }
 
-  await fs.rm(MAXMIND_DB_PATH)
-  const subDirs = await fs.readdir(MAXMIND_OUTPUT_PATH)
+  await rm(MAXMIND_DB_PATH)
+  const subDirs = await readdir(MAXMIND_OUTPUT_PATH)
   for (const subDir of subDirs) {
-    const isDirectory = (await fs.stat(path.resolve(MAXMIND_OUTPUT_PATH, subDir))).isDirectory()
+    const isDirectory = (await stat(path.resolve(MAXMIND_OUTPUT_PATH, subDir))).isDirectory()
     if (isDirectory) {
-      await fs.copyFile(
+      await copyFile(
         `${MAXMIND_OUTPUT_PATH}/${subDir}/GeoLite2-City.mmdb`,
         `${MAXMIND_OUTPUT_PATH}/GeoLite2-City.mmdb`
       )
-      await fs.rm(`${MAXMIND_OUTPUT_PATH}/${subDir}`, {
+      await rm(`${MAXMIND_OUTPUT_PATH}/${subDir}`, {
         recursive: true,
         force: true
       })
