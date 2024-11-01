@@ -3,9 +3,21 @@ import { APP_CONTROLLER_ERROR_CODES, APP_STATUS } from '@/utils/constants'
 import HttpStatus from 'http-status'
 import isURL from 'validator/lib/isURL'
 import { APP_MODEL_ERRORS } from '@/utils/constants'
+import { AppHander } from '@/handlerTypes/app.hander'
+import type { HandlerError } from '@/handlerTypes/error'
+import type { AuthStore } from '@/handlerTypes/auth.store'
 
-async function createApp({ body, error, store }) {
-  const { name, domain } = body
+async function createApp({
+  body: { name, domain },
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  body: typeof AppHander.CreateApp.body.static
+  error: HandlerError
+  store: AuthStore
+}) {
   if (
     !domain ||
     typeof domain !== 'string' ||
@@ -22,7 +34,7 @@ async function createApp({ body, error, store }) {
       message: 'Invalid app domain'
     })
   }
-  const owner = store.user.id
+
   try {
     const app = await AppModel.createApp({
       owner,
@@ -62,9 +74,17 @@ async function createApp({ body, error, store }) {
   }
 }
 
-async function getApp({ params, error, store }) {
-  const appId = params.id
-  const owner = store.user.id
+async function getApp({
+  params: { id: appId },
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  params: typeof AppHander.GetApp.params.static
+  error: HandlerError
+  store: AuthStore
+}) {
   try {
     const app = await AppModel.getAppById(appId, owner)
     if (app) {
@@ -92,9 +112,17 @@ async function getApp({ params, error, store }) {
   }
 }
 
-async function deleteApp({ params, error, store }) {
-  const appId = params.id
-  const owner = store.user.id
+async function deleteApp({
+  params: { id: appId },
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  params: typeof AppHander.DeleteApp.params.static
+  error: HandlerError
+  store: AuthStore
+}) {
   try {
     const app = await AppModel.softDeleteApp(appId, owner)
     if (app) {
@@ -122,10 +150,19 @@ async function deleteApp({ params, error, store }) {
   }
 }
 
-async function updateAppDetails({ params, body, error, store }) {
-  const appId = params.id
-  const owner = store.user.id
-  const { name, domain } = body
+async function updateAppDetails({
+  params: { id: appId },
+  body: { name, domain },
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  params: typeof AppHander.UpdateAppDetails.params.static
+  body: typeof AppHander.UpdateAppDetails.body.static
+  error: HandlerError
+  store: AuthStore
+}) {
   if (
     domain &&
     (typeof domain !== 'string' ||
@@ -183,10 +220,19 @@ async function updateAppDetails({ params, body, error, store }) {
   }
 }
 
-async function addEvent({ params, body, error, store }) {
-  const appId = params.id
-  const owner = store.user.id
-  const { event, selectorType, selector, text, trigger, page } = body
+async function addEvent({
+  params: { id: appId },
+  body: { event, selectorType, selector, text, trigger, page },
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  params: typeof AppHander.AddEvent.params.static
+  body: typeof AppHander.AddEvent.body.static
+  error: HandlerError
+  store: AuthStore
+}) {
   try {
     const app = await AppModel.addEvent(appId, owner, {
       event,
@@ -256,11 +302,19 @@ async function addEvent({ params, body, error, store }) {
   }
 }
 
-async function updateEvent({ params, body, error, store }) {
-  const appId = params.id
-  const owner = store.user.id
-  const eventId = params.eventId
-  const { event, selectorType, selector, text, trigger, page } = body
+async function updateEvent({
+  params: { id: appId, eventId },
+  body: { event, selectorType, selector, text, trigger, page },
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  params: typeof AppHander.UpdateEvent.params.static
+  body: typeof AppHander.UpdateEvent.body.static
+  error: HandlerError
+  store: AuthStore
+}) {
   try {
     const app = await AppModel.updateEvent(appId, owner, eventId, {
       event,
@@ -295,10 +349,19 @@ async function updateEvent({ params, body, error, store }) {
   }
 }
 
-async function deleteEvents({ params, body, error, store }) {
-  const appId = params.id
-  const owner = store.user.id
-  const eventIds = body.eventIds
+async function deleteEvents({
+  params: { id: appId },
+  body: { eventIds },
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  params: typeof AppHander.DeleteEvents.params.static
+  body: typeof AppHander.DeleteEvents.body.static
+  error: HandlerError
+  store: AuthStore
+}) {
   try {
     const app = await AppModel.deleteEvents(appId, owner, eventIds)
     if (app) {
@@ -327,9 +390,16 @@ async function deleteEvents({ params, body, error, store }) {
   }
 }
 
-async function fetchApps({ error, store }) {
+async function fetchApps({
+  error,
+  store: {
+    user: { id: owner }
+  }
+}: {
+  error: HandlerError
+  store: AuthStore
+}) {
   try {
-    const owner = store.user.id
     const apps = await AppModel.getAppsByOwner(owner)
     return {
       success: true,
