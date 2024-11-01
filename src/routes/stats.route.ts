@@ -1,6 +1,7 @@
 import StatsController from '@/controllers/Stats.controller'
+import type { ElysiaApp } from '@/app'
 
-function registerStatsRoutes(app, group) {
+function registerStatsRoutes(app: ElysiaApp, group: string) {
   app.group(`${group}/stats`, (app) => {
     app
       .get('/pageviews', StatsController.fetchPageviewStats)

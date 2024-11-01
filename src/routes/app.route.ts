@@ -1,7 +1,8 @@
 import AppController from '@/controllers/App.controller'
 import { authHandle } from '@/middlewares/auth'
+import type { ElysiaApp } from '@/app'
 
-function registerAppRoutes(app, group) {
+function registerAppRoutes(app: ElysiaApp, group: string) {
   app.group(`${group}/app`, (app) => {
     app.onBeforeHandle(authHandle)
     app.post('/create', AppController.createApp)

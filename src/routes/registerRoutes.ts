@@ -2,13 +2,14 @@ import HttpStatus from 'http-status'
 import { registerUserRoutes } from '@/routes/user.route'
 import { registerTrackingRoutes } from '@/routes/tracking.route'
 import { registerAppRoutes } from '@/routes/app.route'
+import type { ElysiaApp } from '@/app'
 // import { registerStatsRoutes } from '@/routes/stats.route'
 
 const urlPrefixV1 = '/v1'
 const analyticsUrlPrefixV1 = `${urlPrefixV1}/:analyticsId`
 const consoleUrlPrefixV1 = `${urlPrefixV1}`
 
-function registerRoutes(app) {
+function registerRoutes(app: ElysiaApp) {
   app.get('/', ({ set }) => {
     set.headers['Cache-Control'] = 'public, max-age=31536000'
     return 'Outline Analytics API v1 (https://api.useoutline.xyz)'

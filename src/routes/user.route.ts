@@ -1,7 +1,8 @@
+import type { ElysiaApp } from '@/app'
 import UserController from '@/controllers/User.controller'
 import { authHandle } from '@/middlewares/auth'
 
-function registerUserRoutes(app, group) {
+function registerUserRoutes(app: ElysiaApp, group: string) {
   app.group(`${group}/user`, (app) => {
     app.post('/register', UserController.registerUser)
     app.post('/otp/verify', UserController.verifyOTP)
