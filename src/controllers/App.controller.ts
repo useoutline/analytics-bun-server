@@ -143,7 +143,7 @@ async function updateAppDetails({ params, body, error, store }) {
     })
   }
   try {
-    const detailsToUpdate = {}
+    const detailsToUpdate: any = {}
     if (name) {
       detailsToUpdate.name = name
     }

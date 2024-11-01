@@ -70,6 +70,7 @@ async function verifyOTP({ body, error, cookie }) {
       secure: true,
       httpOnly: true,
       sign: ['auth'],
+      // @ts-ignore
       path: '/'
     })
     return {
