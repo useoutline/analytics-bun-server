@@ -1,8 +1,27 @@
-import mongoose from 'mongoose'
+import { Schema, Types, model } from 'mongoose'
 import { APP_MODEL_ERRORS, APP_STATUS, TOTAL_ALLOWED_USER_APPS } from '@/utils/constants'
 import { customNanoId } from '@/utils/nanoid'
 
-const AppSchema = new mongoose.Schema(
+interface Event {
+  _id: Types.ObjectId
+  event: string
+  selectorType: string
+  selector: string
+  text?: string
+  trigger: string
+  page?: string
+}
+
+interface App {
+  _id: string
+  owner: string
+  name: string
+  domain?: string
+  events: Event[]
+  status: number
+}
+
+const AppSchema = new Schema<App>(
   {
     _id: {
       type: String,
@@ -212,6 +231,6 @@ const AppSchema = new mongoose.Schema(
   }
 )
 
-const AppModel = mongoose.model('apps', AppSchema)
+const AppModel = model<App>('apps', AppSchema)
 
 export default AppModel
