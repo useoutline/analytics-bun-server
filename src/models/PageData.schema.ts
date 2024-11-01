@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
+import { Schema } from 'mongoose'
 
-const PageDataSchema = new mongoose.Schema(
+const PageDataSchema = new Schema(
   {
     path: {
       type: String

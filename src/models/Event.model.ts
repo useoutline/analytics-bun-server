@@ -1,10 +1,10 @@
-import mongoose from 'mongoose'
+import { Schema, model } from 'mongoose'
 import BrowsingDataSchema from '@/models/BrowsingData.schema'
 import PageDataSchema from '@/models/PageData.schema'
 import UtmSchema from '@/models/Utm.schema'
 import { EVENT_MODEL_ERRORS, EVENT_TYPES } from '@/utils/constants'
 
-const eventSchema = new mongoose.Schema(
+const eventSchema = new Schema(
   {
     app: {
       type: String,
@@ -32,7 +32,8 @@ const eventSchema = new mongoose.Schema(
       type: String
     },
     capturedAt: {
-      type: Date
+      type: Date,
+      required: [true, EVENT_MODEL_ERRORS.CAPTURED_AT_REQUIRED]
     },
     visitedAt: {
       type: Date
@@ -48,11 +49,34 @@ const eventSchema = new mongoose.Schema(
     timestamps: true,
     versionKey: false,
     statics: {
-      async createEvent(eventData) {
+      async createEvent(eventData: {
+        app: string
+        user: string
+        event: string
+        eventType?: number
+        page: typeof PageDataSchema
+        browsingData: typeof BrowsingDataSchema
+        referrer?: string
+        utm: typeof UtmSchema
+        sessionId?: string
+        capturedAt: Date
+        visitedAt?: Date
+        leftAt?: Date
+        data: Record<string, any>
+      }) {
         return await this.create(eventData)
       },
 
-      async getLatestEventsByAppId(appId, { page = 1, limit = 10 } = {}) {
+      async getLatestEventsByAppId(
+        appId: string,
+        {
+          page = 1,
+          limit = 10
+        }: {
+          page?: number
+          limit?: number
+        } = {}
+      ) {
         const skip = (page - 1) * limit
         return await this.find({ app: appId })
           .sort({ capturedAt: -1 })
@@ -65,7 +89,7 @@ const eventSchema = new mongoose.Schema(
   }
 )
 
-const EventModel = mongoose.model('events', eventSchema)
+const EventModel = model('events', eventSchema)
 
 export default EventModel
 

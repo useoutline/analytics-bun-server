@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, Types, model } from 'mongoose'
 import { APP_MODEL_ERRORS, APP_STATUS, TOTAL_ALLOWED_USER_APPS } from '@/utils/constants'
 import { customNanoId } from '@/utils/nanoid'
 
@@ -61,7 +61,7 @@ const AppSchema = new Schema(
     timestamps: true,
     versionKey: false,
     statics: {
-      async createApp({ owner, name, domain }) {
+      async createApp({ owner, name, domain }: { owner: string; name: string; domain?: string }) {
         const totalApps = await this.countDocuments({ owner })
           .where({ status: { $ne: APP_STATUS.DELETED } })
           .exec()
@@ -75,7 +75,7 @@ const AppSchema = new Schema(
         })
       },
 
-      async getAppsByOwner(owner) {
+      async getAppsByOwner(owner: string) {
         return await this.find({
           owner
         })
@@ -86,7 +86,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async getAppById(appId, owner) {
+      async getAppById(appId: string, owner: string) {
         return await this.findById(appId)
           .where({ owner, status: { $ne: APP_STATUS.DELETED } })
           .select('-owner')
@@ -94,7 +94,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async updateApp(appId, owner, details) {
+      async updateApp(appId: string, owner: string, details: { name: string; domain?: string }) {
         return await this.findByIdAndUpdate(
           appId,
           { $set: details },
@@ -105,7 +105,18 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async addEvent(appId, owner, event) {
+      async addEvent(
+        appId: string,
+        owner: string,
+        event: {
+          event: string
+          selectorType: string
+          selector: string
+          text?: string
+          trigger: string
+          page?: string
+        }
+      ) {
         return await this.findByIdAndUpdate(
           appId,
           { $push: { events: event } },
@@ -116,7 +127,19 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async updateEvent(appId, owner, eventId, event) {
+      async updateEvent(
+        appId: string,
+        owner: string,
+        eventId: string,
+        event: {
+          event?: string
+          selectorType?: string
+          selector?: string
+          text?: string
+          trigger?: string
+          page?: string
+        }
+      ) {
         const partialUpdateSet = {}
         if (event && Object.keys(event)) {
           for (let key of Object.keys(event)) {
@@ -133,7 +156,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async deleteEvents(appId, owner, eventIds) {
+      async deleteEvents(appId: string, owner: string, eventIds: string[]) {
         return await this.findByIdAndUpdate(
           appId,
           { $pull: { events: { _id: { $in: eventIds } } } },
@@ -144,7 +167,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async getEventsByAppId(appId) {
+      async getEventsByAppId(appId: string) {
         return await this.findOne({
           _id: appId,
           status: APP_STATUS.ACTIVE
@@ -154,7 +177,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async softDeleteApp(appId, owner) {
+      async softDeleteApp(appId: string, owner: string) {
         return await this.findByIdAndUpdate(
           appId,
           { $set: { status: APP_STATUS.DELETED } },
@@ -165,7 +188,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async resumeApp(appId) {
+      async resumeApp(appId: string) {
         return await this.findByIdAndUpdate(
           appId,
           { $set: { status: APP_STATUS.ACTIVE } },
@@ -175,7 +198,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async pauseApp(appId) {
+      async pauseApp(appId: string) {
         return await this.findByIdAndUpdate(
           appId,
           { $set: { status: APP_STATUS.PAUSED } },
@@ -185,7 +208,7 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async suspendApp(appId) {
+      async suspendApp(appId: string) {
         return await this.findByIdAndUpdate(
           appId,
           { $set: { status: APP_STATUS.SUSPENDED } },
@@ -195,11 +218,11 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async permanentDeleteApp(appId) {
+      async permanentDeleteApp(appId: string) {
         return await this.findByIdAndDelete(appId).exec()
       },
 
-      async getDeletedAppsByOwner(owner) {
+      async getDeletedAppsByOwner(owner: string) {
         return await this.find({
           owner,
           status: APP_STATUS.DELETED

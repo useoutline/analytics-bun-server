@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
+import { Schema } from 'mongoose'
 
-const BrowsingDataSchema = new mongoose.Schema(
+const BrowsingDataSchema = new Schema(
   {
     browser: {
       type: String

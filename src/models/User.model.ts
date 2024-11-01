@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import { Schema, model } from 'mongoose'
 import generateOTP from '@/utils/otp'
 import { signJwt } from '@/utils/jwt'
 import {
@@ -20,13 +20,13 @@ function generateNewOTP() {
   return data
 }
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     email: {
       type: String,
       required: [true, USER_MODEL_ERRORS.EMAIL_REQUIRED],
       unique: [true, USER_MODEL_ERRORS.USER_ALREADY_EXISTS],
-      index: true
+      index: [true, null]
     },
     otp: {
       value: {
@@ -91,7 +91,7 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
     versionKey: false,
     statics: {
-      async createUser({ email }) {
+      async createUser({ email }: { email: string }) {
         const otpData = generateNewOTP()
         const existingUser = await this.findOne({ email }).exec()
         if (existingUser) {
@@ -127,7 +127,7 @@ const UserSchema = new mongoose.Schema(
         }
       },
 
-      async verifyOTP({ email, otp }) {
+      async verifyOTP({ email, otp }: { email: string; otp: string }) {
         const now = Date.now()
         const userData = await this.findOne({ email }).select('_id otp status').exec()
         if (!userData) {
@@ -167,7 +167,7 @@ const UserSchema = new mongoose.Schema(
           throw new Error(OTP_MESSAGES.EXPIRED)
         } else if (otpVerify.attempts >= TOTAL_ALLOWED_INCORRECT_OTP_ATTEMPTS) {
           throw new Error(OTP_MESSAGES.ATTEMPTS_EXCEEDED)
-        } else if (otpVerify.otp !== otp) {
+        } else if (otpVerify.value !== otp) {
           await this.findByIdAndUpdate(userData._id, { $inc: { 'otp.attempts': 1 } }).exec()
           throw new Error(OTP_MESSAGES.INVALID)
         } else {
@@ -175,7 +175,7 @@ const UserSchema = new mongoose.Schema(
         }
       },
 
-      async resendOTP({ email }) {
+      async resendOTP({ email }: { email: string }) {
         const now = Date.now()
         const savedOtp = await this.findOne({
           email,
@@ -205,7 +205,7 @@ const UserSchema = new mongoose.Schema(
         return otp
       },
 
-      async login({ email }) {
+      async login({ email }: { email: string }) {
         const user = await this.findOne({
           email,
           status: { $in: [ACCOUNT_STATUS.UNVERIFIED, ACCOUNT_STATUS.ACTIVE] }
@@ -227,14 +227,14 @@ const UserSchema = new mongoose.Schema(
         return otpData.otp
       },
 
-      async updateUserStatus(id, status) {
+      async updateUserStatus(id: string, status: ACCOUNT_STATUS) {
         return await this.findByIdAndUpdate(id, { status }, { new: true })
           .select('_id email name picture status')
           .lean()
           .exec()
       },
 
-      async getUserById(userId) {
+      async getUserById(userId: string) {
         return await this.findById(userId)
           .where({ status: { $in: [ACCOUNT_STATUS.UNVERIFIED, ACCOUNT_STATUS.ACTIVE] } })
           .select('_id email name picture trial.end subscription.periodEnd')
@@ -242,19 +242,22 @@ const UserSchema = new mongoose.Schema(
           .exec()
       },
 
-      async getUserByEmail(email) {
+      async getUserByEmail(email: string) {
         return await this.findOne({ email }).select('_id email name picture').lean().exec()
       },
 
-      async updateUser({ id, name, picture }) {
-        const dataToUpdate = {}
+      async updateUser({ id, name, picture }: { id: string; name?: string; picture?: string }) {
+        const dataToUpdate: {
+          name?: string
+          picture?: string
+        } = {}
         if (name) {
           dataToUpdate.name = name
         }
         if (picture) {
           dataToUpdate.picture = picture
         }
-        const user = await UserModel.findByIdAndUpdate(id, dataToUpdate, { new: true })
+        const user = await this.findByIdAndUpdate(id, dataToUpdate, { new: true })
           .select('_id name email picture')
           .lean()
           .exec()
@@ -264,6 +267,6 @@ const UserSchema = new mongoose.Schema(
   }
 )
 
-const UserModel = mongoose.model('users', UserSchema)
+const UserModel = model('users', UserSchema)
 
 export default UserModel

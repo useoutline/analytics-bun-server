@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
+import { Schema } from 'mongoose'
 
-const UtmSchema = new mongoose.Schema(
+const UtmSchema = new Schema(
   {
     utm_source: {
       type: String
