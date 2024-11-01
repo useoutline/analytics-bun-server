@@ -1,7 +1,9 @@
 import { Elysia } from 'elysia'
 
 export function helmet() {
-  function setHeaders({ set }) {
+  return new Elysia({
+    name: '@useoutline/elysia-helmet'
+  }).onRequest(({ set }) => {
     set.headers['Content-Security-Policy'] =
       "base-uri 'self';form-action 'self';upgrade-insecure-requests"
     set.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
@@ -14,9 +16,5 @@ export function helmet() {
     set.headers['X-Frame-Options'] = 'SAMEORIGIN'
     set.headers['X-Permitted-Cross-Domain-Policies'] = 'none'
     delete set.headers['X-Powered-By']
-  }
-
-  return new Elysia({
-    name: '@useoutline/elysia-helmet'
-  }).onRequest(setHeaders)
+  })
 }

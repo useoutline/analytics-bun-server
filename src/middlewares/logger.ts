@@ -1,22 +1,26 @@
 import { Elysia } from 'elysia'
 import color from 'chalk'
 
+type LoggerStore = {
+  beforeTime: bigint
+}
+
 /* Code inspired from @grottto/logysia */
 /* Source Code: https://github.com/tristanisham/logysia */
 export function logger() {
   return new Elysia({
     name: '@useoutline/elysia-logger'
   })
-    .onRequest((ctx) => {
-      ctx.store = { ...ctx.store, beforeTime: process.hrtime.bigint() }
+    .onRequest(({ store }) => {
+      store = { ...store, beforeTime: process.hrtime.bigint() }
     })
-    .onAfterResponse({ as: 'global' }, (ctx) => {
+    .onAfterResponse({ as: 'global' }, ({ store, request, response }) => {
       const logStr = []
-      logStr.push(ctx.request.method)
-      logStr.push(new URL(ctx.request.url).pathname)
-      const beforeTime = ctx.store.beforeTime
+      logStr.push(request.method)
+      logStr.push(new URL(request.url).pathname)
+      const beforeTime = (store as LoggerStore).beforeTime
       logStr.push(durationString(beforeTime))
-      if (ctx.response?.error) {
+      if ((response as any)?.error) {
         console.log(color.red(logStr.join(' | ')))
       } else {
         console.log(color.green(logStr.join(' | ')))
@@ -33,14 +37,14 @@ export function logger() {
       }
 
       logStr.push(error.message)
-      const beforeTime = store.beforeTime
+      const beforeTime = (store as LoggerStore).beforeTime
       logStr.push(durationString(beforeTime))
 
       console.log(color.red(logStr.join(' ')))
     })
 }
 
-function durationString(beforeTime) {
+function durationString(beforeTime: bigint) {
   const now = process.hrtime.bigint()
   const timeDifference = now - beforeTime
   const nanoseconds = Number(timeDifference)
