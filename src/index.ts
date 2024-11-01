@@ -1,15 +1,20 @@
-import { Elysia } from 'elysia'
+import { app, type ElysiaApp } from '@/app'
 import mongoose from 'mongoose'
 import { registerMiddlewares } from '@/middlewares/registerMiddlewares'
 import { registerRoutes } from '@/routes/registerRoutes'
 import { downloadMaxmindDB } from '@/utils/maxmind'
 import cron from '@elysiajs/cron'
 
-const app = new Elysia()
-
-const start = async (serverApp) => {
+const start = async (serverApp: ElysiaApp) => {
   try {
-    const serverOptions = {
+    const serverOptions: {
+      port: number
+      tls?: {
+        key: Blob
+        cert: Blob
+      }
+      development?: boolean
+    } = {
       port: process.env.PORT || 3000
     }
 
