@@ -1,8 +1,9 @@
 import Bowser from 'bowser'
+import type { HTTPHeaders } from 'elysia/types'
 import maxmind from 'maxmind'
 import type { CityResponse } from 'maxmind'
 
-function getUserAgentDetails(headers) {
+function getUserAgentDetails(headers: HTTPHeaders) {
   const useragent = headers['user-agent']
   const outlineBrowser = headers['x-outline-browser']
   const browserDetails = Bowser.parse(useragent)
