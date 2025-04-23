@@ -14,11 +14,7 @@ function getUserAgentDetails(headers: HTTPHeaders) {
   }
 }
 
-async function getLocationFromIp(
-  ip:
-    | `${number}.${number}.${number}.${number}`
-    | `${string}:${string}:${string}:${string}:${string}:${string}:${string}:${string}`
-) {
+async function getLocationFromIp(ip: string) {
   if (ip) {
     const dbPath = Bun.resolveSync('./maxmind/GeoLite2-City.mmdb', process.cwd())
     const lookup = await maxmind.open<CityResponse>(dbPath)
@@ -35,7 +31,10 @@ async function getLocationFromIp(
           ipDetails.location?.latitude && ipDetails.location?.longitude
             ? {
                 type: 'Point',
-                coordinates: [ipDetails.location?.longitude, ipDetails.location?.latitude]
+                coordinates: [ipDetails.location?.longitude, ipDetails.location?.latitude] as [
+                  number,
+                  number
+                ]
               }
             : undefined,
         timezone: ipDetails.location?.time_zone || undefined
@@ -74,14 +73,14 @@ type Page = {
   query?: Record<string, string>
 }
 
-function getPageData(requestBody) {
-  const pageUrl = new URL(requestBody.page.fullpath)
+function getPageData(pageData: { fullpath: string; title: string; meta?: Record<string, string> }) {
+  const pageUrl = new URL(pageData.fullpath)
   const page: Page = {
-    fullpath: requestBody.page.fullpath,
+    fullpath: pageData.fullpath,
     path: pageUrl.pathname,
     hash: pageUrl.hash,
-    title: requestBody.page.title,
-    meta: requestBody.page.meta
+    title: pageData.title,
+    meta: pageData.meta
   }
   if (pageUrl.search.trim().length) {
     page.query = Object.fromEntries(pageUrl.searchParams)
@@ -97,8 +96,8 @@ type UTM = {
   utm_content?: string
 }
 
-function getUtmData(requestBody) {
-  const pageUrl = new URL(requestBody.page.fullpath)
+function getUtmData(fullpath: string) {
+  const pageUrl = new URL(fullpath)
   if (pageUrl.search.trim().length) {
     const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']
     const utm: UTM = {}

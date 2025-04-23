@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
-import BrowsingDataSchema from '@/models/BrowsingData.schema'
-import PageDataSchema from '@/models/PageData.schema'
-import UtmSchema from '@/models/Utm.schema'
+import BrowsingDataSchema, { type BrowsingData } from '@/models/BrowsingData.schema'
+import PageDataSchema, { type PageData } from '@/models/PageData.schema'
+import UtmSchema, { type UTM } from '@/models/Utm.schema'
 import { EVENT_MODEL_ERRORS, EVENT_TYPES } from '@/utils/constants'
 
 const eventSchema = new Schema(
@@ -54,14 +54,14 @@ const eventSchema = new Schema(
         user: string
         event: string
         eventType?: number
-        page: typeof PageDataSchema
-        browsingData: typeof BrowsingDataSchema
+        page: PageData
+        browsingData: BrowsingData
         referrer?: string
-        utm: typeof UtmSchema
+        utm: UTM
         sessionId?: string
-        capturedAt: Date
-        visitedAt?: Date
-        leftAt?: Date
+        capturedAt: number | Date
+        visitedAt?: number | Date
+        leftAt?: number | Date
         data: Record<string, any>
       }) {
         return await this.create(eventData)

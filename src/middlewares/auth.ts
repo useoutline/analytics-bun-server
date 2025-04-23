@@ -1,8 +1,21 @@
+import type { HandlerError } from '@/types/error'
 import { verifyJwt } from '@/utils/jwt'
 import HttpStatus from 'http-status'
 
-export async function authHandle({ cookie, error, store }) {
-  const token = cookie.auth.value
+export async function authHandle({
+  cookie,
+  error,
+  store
+}: {
+  cookie: {
+    auth?: {
+      value: string
+    }
+  }
+  error: HandlerError
+  store: any
+}) {
+  const token = cookie.auth?.value
   try {
     if (!token) {
       throw new Error()

@@ -11,8 +11,8 @@ export function logger() {
   return new Elysia({
     name: '@useoutline/elysia-logger'
   })
-    .onRequest(({ store }) => {
-      store = { ...store, beforeTime: process.hrtime.bigint() }
+    .onRequest(({ store }: { store: Record<string, any> }) => {
+      store.beforeTime = process.hrtime.bigint()
     })
     .onAfterResponse({ as: 'global' }, ({ store, request, response }) => {
       const logStr = []

@@ -27,4 +27,13 @@ const PageDataSchema = new Schema(
   }
 )
 
+export interface PageData {
+  path?: string
+  query?: Record<string, string>
+  hash?: string
+  fullpath?: string
+  title?: string
+  meta?: Record<string, string>
+}
+
 export default PageDataSchema

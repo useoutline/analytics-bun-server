@@ -3,11 +3,20 @@ import HttpStatus from 'http-status'
 import { OTP_MESSAGES, USER_CONTROLLER_ERROR_CODES, USER_MODEL_ERRORS } from '@/utils/constants'
 import UserModel from '@/models/User.model'
 import { sendMail } from '@/utils/mailer'
+import type { UserHandler } from '@/types/user.handler'
+import type { HandlerError } from '@/types/error'
+import type { Cookie } from 'elysia/cookies'
+import type { AuthStore } from '@/types/auth.store'
 
 const ACCESS_TOKEN_EXPIRY = 90 * 24 * 60 * 60 // 90 days in seconds
 
-async function registerUser({ body, error }) {
-  const { email } = body
+async function registerUser({
+  body: { email },
+  error
+}: {
+  body: UserHandler['RegisterUser']['body']
+  error: HandlerError
+}) {
   if (!isEmail(email)) {
     return error(HttpStatus.BAD_REQUEST, {
       success: false,
@@ -35,7 +44,7 @@ async function registerUser({ body, error }) {
         message: 'Account already exists'
       })
     }
-    console.error(err.message)
+    console.error('registerUser', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -44,8 +53,15 @@ async function registerUser({ body, error }) {
   }
 }
 
-async function verifyOTP({ body, error, cookie }) {
-  const { email, otp } = body
+async function verifyOTP({
+  body: { email, otp },
+  error,
+  cookie
+}: {
+  body: UserHandler['VerifyOTP']['body']
+  error: HandlerError
+  cookie: Record<string, Cookie<string>>
+}) {
   if (!isEmail(email)) {
     return error(HttpStatus.BAD_REQUEST, {
       success: false,
@@ -69,6 +85,7 @@ async function verifyOTP({ body, error, cookie }) {
       path: '/',
       secure: true,
       httpOnly: true,
+      // @ts-ignore
       sign: ['auth'],
       // @ts-ignore
       path: '/'
@@ -107,8 +124,13 @@ async function verifyOTP({ body, error, cookie }) {
   }
 }
 
-async function resendOTP({ body, error }) {
-  const { email } = body
+async function resendOTP({
+  body: { email },
+  error
+}: {
+  body: UserHandler['ResendOTP']['body']
+  error: HandlerError
+}) {
   if (!isEmail(email)) {
     return error(HttpStatus.BAD_REQUEST, {
       success: false,
@@ -136,7 +158,7 @@ async function resendOTP({ body, error }) {
         message: 'Account does not exist'
       })
     }
-    console.error(err.message)
+    console.error('resendOTP', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -145,8 +167,13 @@ async function resendOTP({ body, error }) {
   }
 }
 
-async function loginUser({ body, error }) {
-  const { email } = body
+async function loginUser({
+  body: { email },
+  error
+}: {
+  body: UserHandler['LoginUser']['body']
+  error: HandlerError
+}) {
   if (!isEmail(email)) {
     return error(HttpStatus.BAD_REQUEST, {
       success: false,
@@ -174,7 +201,7 @@ async function loginUser({ body, error }) {
         message: 'Account does not exist'
       })
     }
-    console.error(err.message)
+    console.error('loginUser', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -183,17 +210,26 @@ async function loginUser({ body, error }) {
   }
 }
 
-async function updateUser({ body, error, store }) {
-  const { name } = body
+async function updateUser({
+  body: { name },
+  error,
+  store: {
+    user: { id: userId }
+  }
+}: {
+  body: UserHandler['UpdateUser']['body']
+  error: HandlerError
+  store: AuthStore
+}) {
   try {
-    const updatedUser = await UserModel.updateUser({ id: store.user.id, name })
+    const updatedUser = await UserModel.updateUser({ id: userId, name })
     return {
       success: true,
       code: HttpStatus.OK,
       user: updatedUser
     }
   } catch (err) {
-    console.error(err.message)
+    console.error('updateUser', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -202,8 +238,14 @@ async function updateUser({ body, error, store }) {
   }
 }
 
-async function getUser({ store }) {
-  const user = await UserModel.getUserById(store.user.id)
+async function getUser({
+  store: {
+    user: { id: userId }
+  }
+}: {
+  store: AuthStore
+}) {
+  const user = await UserModel.getUserById(userId)
   return {
     success: true,
     code: HttpStatus.OK,

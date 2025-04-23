@@ -41,4 +41,21 @@ const BrowsingDataSchema = new Schema(
   }
 )
 
+export interface BrowsingData {
+  browser?: string
+  os?: string
+  platform?: string
+  city?: string
+  country?: {
+    name: string
+    code?: string
+  }
+  continent?: string
+  coords?: {
+    type: string
+    coordinates: [number, number]
+  }
+  timezone?: string
+}
+
 export default BrowsingDataSchema

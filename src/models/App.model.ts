@@ -1,4 +1,4 @@
-import { Schema, Types, model } from 'mongoose'
+import { Schema, model } from 'mongoose'
 import { APP_MODEL_ERRORS, APP_STATUS, TOTAL_ALLOWED_USER_APPS } from '@/utils/constants'
 import { customNanoId } from '@/utils/nanoid'
 

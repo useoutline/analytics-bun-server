@@ -3,9 +3,9 @@ import { APP_CONTROLLER_ERROR_CODES, APP_STATUS } from '@/utils/constants'
 import HttpStatus from 'http-status'
 import isURL from 'validator/lib/isURL'
 import { APP_MODEL_ERRORS } from '@/utils/constants'
-import { AppHander } from '@/handlerTypes/app.hander'
-import type { HandlerError } from '@/handlerTypes/error'
-import type { AuthStore } from '@/handlerTypes/auth.store'
+import type { AppHandler } from '@/types/app.hander'
+import type { HandlerError } from '@/types/error'
+import type { AuthStore } from '@/types/auth.store'
 
 async function createApp({
   body: { name, domain },
@@ -14,7 +14,7 @@ async function createApp({
     user: { id: owner }
   }
 }: {
-  body: typeof AppHander.CreateApp.body.static
+  body: AppHandler['CreateApp']['body']
   error: HandlerError
   store: AuthStore
 }) {
@@ -65,7 +65,7 @@ async function createApp({
         message: 'Maximum apps limit exceeded.'
       })
     }
-    console.error(err.message)
+    console.error('createApp', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -81,7 +81,7 @@ async function getApp({
     user: { id: owner }
   }
 }: {
-  params: typeof AppHander.GetApp.params.static
+  params: AppHandler['GetApp']['params']
   error: HandlerError
   store: AuthStore
 }) {
@@ -103,7 +103,7 @@ async function getApp({
       message: 'App not found'
     })
   } catch (err) {
-    console.error(err.message)
+    console.error('getApp', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -119,7 +119,7 @@ async function deleteApp({
     user: { id: owner }
   }
 }: {
-  params: typeof AppHander.DeleteApp.params.static
+  params: AppHandler['DeleteApp']['params']
   error: HandlerError
   store: AuthStore
 }) {
@@ -141,7 +141,7 @@ async function deleteApp({
       message: 'App not found'
     })
   } catch (err) {
-    console.error(err.message)
+    console.error('deleteApp', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -158,8 +158,8 @@ async function updateAppDetails({
     user: { id: owner }
   }
 }: {
-  params: typeof AppHander.UpdateAppDetails.params.static
-  body: typeof AppHander.UpdateAppDetails.body.static
+  params: AppHandler['UpdateAppDetails']['params']
+  body: AppHandler['UpdateAppDetails']['body']
   error: HandlerError
   store: AuthStore
 }) {
@@ -211,7 +211,7 @@ async function updateAppDetails({
         message: 'App name is required'
       })
     }
-    console.error(err.message)
+    console.error('updateAppDetails', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -228,8 +228,8 @@ async function addEvent({
     user: { id: owner }
   }
 }: {
-  params: typeof AppHander.AddEvent.params.static
-  body: typeof AppHander.AddEvent.body.static
+  params: AppHandler['AddEvent']['params']
+  body: AppHandler['AddEvent']['body']
   error: HandlerError
   store: AuthStore
 }) {
@@ -293,7 +293,7 @@ async function addEvent({
         message: 'Trigger is required'
       })
     }
-    console.error(err.message)
+    console.error('addEvent', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -310,8 +310,8 @@ async function updateEvent({
     user: { id: owner }
   }
 }: {
-  params: typeof AppHander.UpdateEvent.params.static
-  body: typeof AppHander.UpdateEvent.body.static
+  params: AppHandler['UpdateEvent']['params']
+  body: AppHandler['UpdateEvent']['body']
   error: HandlerError
   store: AuthStore
 }) {
@@ -340,7 +340,7 @@ async function updateEvent({
       message: 'App not found'
     })
   } catch (err) {
-    console.error(err.message)
+    console.error('updateEvent', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -357,8 +357,8 @@ async function deleteEvents({
     user: { id: owner }
   }
 }: {
-  params: typeof AppHander.DeleteEvents.params.static
-  body: typeof AppHander.DeleteEvents.body.static
+  params: AppHandler['DeleteEvents']['params']
+  body: AppHandler['DeleteEvents']['body']
   error: HandlerError
   store: AuthStore
 }) {
@@ -381,7 +381,7 @@ async function deleteEvents({
       message: 'App not found'
     })
   } catch (err) {
-    console.error(err.message)
+    console.error('deleteEvents', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -410,7 +410,7 @@ async function fetchApps({
       }))
     }
   } catch (err) {
-    console.error(err.message)
+    console.error('fetchApps', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
