@@ -5,6 +5,6 @@
     },
     "module": "Preserve",
     "target": "ES2023",
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "types": ["./src/types/env.d.ts"]
   }
 }
