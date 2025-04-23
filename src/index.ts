@@ -4,17 +4,11 @@ import { registerMiddlewares } from '@/middlewares/registerMiddlewares'
 import { registerRoutes } from '@/routes/registerRoutes'
 import { downloadMaxmindDB } from '@/utils/maxmind'
 import cron from '@elysiajs/cron'
+import type { TLSServeOptions } from 'bun'
 
 const start = async (serverApp: ElysiaApp) => {
   try {
-    const serverOptions: {
-      port: number
-      tls?: {
-        key: Blob
-        cert: Blob
-      }
-      development?: boolean
-    } = {
+    const serverOptions: Partial<TLSServeOptions> = {
       port: process.env.PORT || 3000
     }
 
@@ -34,9 +28,9 @@ const start = async (serverApp: ElysiaApp) => {
     )
     const dbConnection = await mongoose.connect(process.env.MONGO_URL)
     console.log(`🦊 MongoDB is connected at ${dbConnection.connection.host}`)
-    // downloadMaxmindDB() // Download DB on server start
+    downloadMaxmindDB() // Download DB on server start
   } catch (e) {
-    console.error(e.message)
+    console.error('app error', e)
     process.exit(1)
   }
 }
