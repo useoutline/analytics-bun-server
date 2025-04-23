@@ -3,7 +3,7 @@
   "version": "1.0.50",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.js",
+    "dev": "bun run --watch src/index.ts",
     "start": "pm2 start --interpreter ~/.bun/bin/bun src/index.js --name analytics-bun-server",
     "restart": "pm2 restart analytics-bun-server",
     "delete": "pm2 delete analytics-bun-server",
@@ -11,35 +11,36 @@
     "logs": "pm2 logs",
     "stop": "pm2 stop analytics-bun-server",
     "format": "prettier --ignore-path .gitignore jwtkeys maxmind --write .",
-    "generate-jwt-keys": "ssh-keygen -t rsa -b 4096 -E SHA512 -f jwtkeys/access/privatekey.pem -m PEM && openssl rsa -in jwtkeys/access/privatekey.pem -pubout -outform PEM -out jwtkeys/access/publickey.pem"
+    "generate-jwt-keys": "ssh-keygen -t rsa -b 4096 -E SHA512 -f jwtkeys/access/privatekey.pem -m PEM && openssl rsa -in jwtkeys/access/privatekey.pem -pubout -outform PEM -out jwtkeys/access/publickey.pem",
+    "c": "echo \"Hello\""
   },
   "dependencies": {
-    "@elysiajs/cron": "^0.8.0",
+    "@elysiajs/cron": "^1.2.0",
     "bowser": "^2.11.0",
-    "chalk": "^5.3.0",
-    "elysia": "latest",
-    "elysia-rate-limit": "^2.2.0",
+    "chalk": "^5.4.1",
+    "elysia": "^1.2.25",
+    "elysia-rate-limit": "^4.3.0",
     "http-status": "^1.8.1",
     "http-status-code": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
-    "maxmind": "^4.3.22",
-    "mongoose": "^8.7.3",
-    "nanoid": "^5.0.8",
-    "nodemailer": "^6.9.16",
+    "maxmind": "^4.3.24",
+    "mongoose": "^8.13.2",
+    "nanoid": "^5.1.5",
+    "nodemailer": "^6.10.1",
     "targz": "^1.0.1",
-    "validator": "^13.12.0"
+    "validator": "^13.15.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
-    "@types/bun": "latest",
-    "@types/jsonwebtoken": "^9.0.7",
-    "@types/nodemailer": "^6.4.16",
-    "@types/targz": "^1.0.4",
-    "bun-types": "latest",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.0",
-    "pm2": "^5.4.2",
-    "prettier": "^3.3.3"
+    "@faker-js/faker": "^9.7.0",
+    "@types/bun": "^1.2.10",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/nodemailer": "^6.4.17",
+    "@types/targz": "^1.0.5",
+    "bun-types": "^1.2.10",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "pm2": "^6.0.5",
+    "prettier": "^3.5.3"
   },
   "module": "src/index.js"
 }
