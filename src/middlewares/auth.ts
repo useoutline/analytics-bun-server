@@ -3,24 +3,21 @@ import { verifyJwt } from '@/utils/jwt'
 import HttpStatus from 'http-status'
 
 export async function authHandle({
-  cookie,
+  headers,
   error,
   store
 }: {
-  cookie: {
-    auth?: {
-      value: string
-    }
-  }
+  headers: Record<string, string>
   error: HandlerError
   store: any
 }) {
-  const token = cookie.auth?.value
+  const token = headers.authorization
   try {
-    if (!token) {
+    if (!token || !token.startsWith('Bearer ')) {
       throw new Error()
     }
-    const decoded = verifyJwt(token)
+    const tokenToVerify = token.split(' ')[1]
+    const decoded = verifyJwt(tokenToVerify)
     store.user = decoded
   } catch (err) {
     return error(HttpStatus.UNAUTHORIZED, {

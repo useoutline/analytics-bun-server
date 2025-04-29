@@ -6,32 +6,46 @@ import { compression } from '@/middlewares/compression'
 import { allowConsoleCors } from '@/middlewares/cors'
 import { cookie } from '@/middlewares/cookie'
 import type { ElysiaApp } from '@/app'
+import { swagger } from '@elysiajs/swagger'
 
 function registerMiddlewares(app: ElysiaApp) {
-  try {
-    app.use(compression())
-    app.use(logger())
-    if (process.env.NODE_ENV === 'production') {
-      app.use(
-        rateLimit({
-          max: 10,
-          duration: 1000,
-          responseCode: 429,
-          responseMessage: 'Too many requests',
-          generator: (request, server) => {
-            return (
-              request.headers.get('X-Forwarded-For') || server.requestIP(request)?.address || ''
-            )
-          }
-        })
-      )
-    }
-    app.use(helmet())
-    app.onRequest(allowConsoleCors)
-    app.use(cookie())
-  } catch (e) {
-    console.error('Error registering middlewares', e)
+  app.use(compression())
+  app.use(logger())
+  if (process.env.NODE_ENV === 'production') {
+    app.use(
+      rateLimit({
+        max: 50,
+        duration: 5000,
+        generator: (request, server) => {
+          return request.headers.get('X-Forwarded-For') || server.requestIP(request)?.address || ''
+        }
+      })
+    )
   }
+  app.use(helmet())
+  app.onRequest(allowConsoleCors)
+  app.use(cookie())
+  app.use(
+    swagger({
+      path: '/',
+      version: '1.0.0',
+      scalarConfig: {
+        darkMode: false
+      },
+      swaggerOptions: {
+        syntaxHighlight: {
+          activate: true
+        }
+      },
+      documentation: {
+        info: {
+          title: 'Outline Analytics API',
+          version: '1.0.0',
+          description: 'API documentation for the application'
+        }
+      }
+    })
+  )
 }
 
 export { registerMiddlewares }

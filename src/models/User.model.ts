@@ -43,6 +43,9 @@ const UserSchema = new Schema(
     name: {
       type: String
     },
+    password: {
+      type: String
+    },
     picture: {
       type: String
     },
@@ -91,7 +94,7 @@ const UserSchema = new Schema(
     timestamps: true,
     versionKey: false,
     statics: {
-      async createUser({ email }: { email: string }) {
+      async createUser({ name, email }: { name: string; email: string }) {
         const otpData = generateNewOTP()
         const existingUser = await this.findOne({ email }).exec()
         if (existingUser) {
@@ -115,6 +118,7 @@ const UserSchema = new Schema(
           }
         }
         const user = await this.create({
+          name,
           email,
           status: ACCOUNT_STATUS.UNVERIFIED,
           otp: {
@@ -156,7 +160,7 @@ const UserSchema = new Schema(
           } else {
             await this.findByIdAndUpdate(userData._id, { $unset: { otp: 1 } }).exec()
           }
-          const accessToken = signJwt({ id: userData._id, email })
+          const accessToken = signJwt({ id: userData._id.toString(), email })
           return {
             tokens: {
               access: accessToken

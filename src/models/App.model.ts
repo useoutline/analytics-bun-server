@@ -29,9 +29,9 @@ const AppSchema = new Schema(
         selectorType: {
           type: String,
           required: [true, APP_MODEL_ERRORS.SELECTOR_TYPE_REQUIRED],
-          default: 'selector',
+          default: 'id',
           enum: {
-            values: ['id', 'text', 'selector'],
+            values: ['id', 'class', 'attribute', 'text', 'selector'],
             message: APP_MODEL_ERRORS.SELECTOR_TYPE_INVALID
           }
         },
@@ -94,7 +94,11 @@ const AppSchema = new Schema(
           .exec()
       },
 
-      async updateApp(appId: string, owner: string, details: { name: string; domain?: string }) {
+      async updateApp(
+        appId: string,
+        owner: string,
+        details: Partial<{ name: string; domain: string }>
+      ) {
         return await this.findByIdAndUpdate(
           appId,
           { $set: details },
@@ -131,14 +135,14 @@ const AppSchema = new Schema(
         appId: string,
         owner: string,
         eventId: string,
-        event: {
-          event?: string
-          selectorType?: string
-          selector?: string
-          text?: string
-          trigger?: string
-          page?: string
-        }
+        event: Partial<{
+          event: string
+          selectorType: string
+          selector: string
+          text: string
+          trigger: string
+          page: string
+        }>
       ) {
         const partialUpdateSet = {}
         if (event && Object.keys(event)) {

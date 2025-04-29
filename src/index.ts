@@ -28,9 +28,8 @@ const start = async (serverApp: ElysiaApp) => {
     )
     const dbConnection = await mongoose.connect(process.env.MONGO_URL)
     console.log(`🦊 MongoDB is connected at ${dbConnection.connection.host}`)
-    downloadMaxmindDB() // Download DB on server start
+    // downloadMaxmindDB() // Download DB on server start
   } catch (e) {
-    console.error('app error', e)
     process.exit(1)
   }
 }

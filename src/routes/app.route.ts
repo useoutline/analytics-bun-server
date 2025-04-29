@@ -1,21 +1,35 @@
 import AppController from '@/controllers/App.controller'
 import { authHandle } from '@/middlewares/auth'
 import type { ElysiaApp } from '@/app'
+import {
+  AddEvent,
+  CreateApp,
+  DeleteApp,
+  DeleteEvents,
+  FetchApps,
+  GetApp,
+  UpdateAppDetails,
+  UpdateEvent
+} from '@/types/app.hander'
 
 function registerAppRoutes(app: ElysiaApp, group: string) {
   app.group(`${group}/app`, (app) => {
-    app.onBeforeHandle(authHandle)
-    app.post('/create', AppController.createApp)
-    app.get('/:id', AppController.getApp)
-    app.delete('/:id', AppController.deleteApp)
-    app.patch('/:id/update', AppController.updateAppDetails)
-    app.put('/:id/events/add', AppController.addEvent)
-    app.patch('/:id/events/:eventId/update', AppController.updateEvent)
-    app.put('/:id/events/delete', AppController.deleteEvents)
+    app
+      .onBeforeHandle(authHandle)
+      .post('/create', AppController.createApp, CreateApp)
+      .get('/:id', AppController.getApp, GetApp)
+      .delete('/:id', AppController.deleteApp, DeleteApp)
+      .patch('/:id/update', AppController.updateAppDetails, UpdateAppDetails)
+      .put('/:id/events/add', AppController.addEvent, AddEvent)
+      .patch('/:id/events/:eventId/update', AppController.updateEvent, UpdateEvent)
+      .put('/:id/events/delete', AppController.deleteEvents, DeleteEvents)
     return app
   })
 
-  app.get(`${group}/apps`, AppController.fetchApps, { beforeHandle: authHandle })
+  app.group(`${group}/apps`, (app) => {
+    app.onBeforeHandle(authHandle).get(`/`, AppController.fetchApps, FetchApps)
+    return app
+  })
 }
 
 export { registerAppRoutes }

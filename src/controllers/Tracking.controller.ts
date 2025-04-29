@@ -50,7 +50,6 @@ async function trackEvent({
     })
     return { success: true }
   } catch (err) {
-    console.error('trackEvent', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       error: true
     })
@@ -96,7 +95,6 @@ async function trackSession({
     })
     return { success: true }
   } catch (err) {
-    console.error('trackSession', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       error: true
     })

@@ -7,25 +7,26 @@ import type { UserHandler } from '@/types/user.handler'
 import type { HandlerError } from '@/types/error'
 import type { Cookie } from 'elysia/cookies'
 import type { AuthStore } from '@/types/auth.store'
+import { sendRouteError } from '@/utils/sendRouteError'
+import { sendInternalServerError } from '@/utils/sendInternalServerError'
 
 const ACCESS_TOKEN_EXPIRY = 90 * 24 * 60 * 60 // 90 days in seconds
 
 async function registerUser({
-  body: { email },
+  body: { name, email },
   error
 }: {
   body: UserHandler['RegisterUser']['body']
   error: HandlerError
 }) {
   if (!isEmail(email)) {
-    return error(HttpStatus.BAD_REQUEST, {
-      success: false,
-      code: USER_CONTROLLER_ERROR_CODES.INVALID_EMAIL,
-      message: 'Invalid email'
-    })
+    return error(
+      HttpStatus.UNPROCESSABLE_ENTITY,
+      sendRouteError(USER_CONTROLLER_ERROR_CODES.INVALID_EMAIL, 'Invalid email')
+    )
   }
   try {
-    const user = await UserModel.createUser({ email })
+    const user = await UserModel.createUser({ name, email })
     await sendMail({
       subject: 'Verify your email',
       recipientEmail: email,
@@ -34,22 +35,20 @@ async function registerUser({
     })
     return {
       success: true,
-      code: HttpStatus.OK
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email
+      }
     }
   } catch (err) {
     if (err.message?.includes(USER_MODEL_ERRORS.USER_ALREADY_EXISTS)) {
-      return error(HttpStatus.BAD_REQUEST, {
-        success: false,
-        code: USER_CONTROLLER_ERROR_CODES.USER_ALREADY_EXISTS,
-        message: 'Account already exists'
-      })
+      return error(
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        sendRouteError(USER_CONTROLLER_ERROR_CODES.USER_ALREADY_EXISTS, 'Account already exists')
+      )
     }
-    console.error('registerUser', err.message)
-    return error(HttpStatus.INTERNAL_SERVER_ERROR, {
-      success: false,
-      code: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Something went wrong.'
-    })
+    sendInternalServerError(error)
   }
 }
 
@@ -158,7 +157,6 @@ async function resendOTP({
         message: 'Account does not exist'
       })
     }
-    console.error('resendOTP', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -201,7 +199,6 @@ async function loginUser({
         message: 'Account does not exist'
       })
     }
-    console.error('loginUser', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -229,7 +226,6 @@ async function updateUser({
       user: updatedUser
     }
   } catch (err) {
-    console.error('updateUser', err.message)
     return error(HttpStatus.INTERNAL_SERVER_ERROR, {
       success: false,
       code: HttpStatus.INTERNAL_SERVER_ERROR,
