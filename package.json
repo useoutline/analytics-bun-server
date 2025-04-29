@@ -16,12 +16,12 @@
   },
   "dependencies": {
     "@elysiajs/cron": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.2",
     "bowser": "^2.11.0",
     "chalk": "^5.4.1",
     "elysia": "^1.2.25",
     "elysia-rate-limit": "^4.3.0",
     "http-status": "^1.8.1",
-    "http-status-code": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "maxmind": "^4.3.24",
     "mongoose": "^8.13.2",
