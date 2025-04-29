@@ -7,9 +7,7 @@ const MAXMIND_OUTPUT_PATH = 'maxmind'
 
 async function downloadMaxmindDB() {
   const response = await fetch(process.env.MAXMIND_DB_URL)
-  console.log('Maxmind response', response)
   const data = await response.blob()
-  console.log('Maxmind data', data)
 
   await Bun.write(MAXMIND_DB_PATH, data)
 
@@ -17,7 +15,7 @@ async function downloadMaxmindDB() {
     await decompressTargz(MAXMIND_DB_PATH, MAXMIND_OUTPUT_PATH)
   } catch (err) {
     console.error('Maxmind Error', err)
-    return
+    throw err
   }
 
   await rm(MAXMIND_DB_PATH)
