@@ -13,7 +13,7 @@ const JWT = {
 
 function signJwt(data: { id: string; email: string }, type: 'ACCESS' | 'REFRESH' = 'ACCESS') {
   const privateKey = type === 'ACCESS' ? JWT.ACCESS.privateKey : JWT.REFRESH.privateKey
-  const expiresIn = type === 'ACCESS' ? '1h' : '30d'
+  const expiresIn = type === 'ACCESS' ? '15m' : '30d'
   return sign(Buffer.from(JSON.stringify(data)), privateKey, { expiresIn, algorithm: 'RS256' })
 }
 

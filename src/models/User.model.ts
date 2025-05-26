@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose'
 import generateOTP from '@/utils/otp'
-import { signJwt } from '@/utils/jwt'
 import {
   USER_MODEL_ERRORS,
   BILLING_PERIOD,
@@ -160,12 +159,7 @@ const UserSchema = new Schema(
           } else {
             await this.findByIdAndUpdate(userData._id, { $unset: { otp: 1 } }).exec()
           }
-          const accessToken = signJwt({ id: userData._id.toString(), email })
-          return {
-            tokens: {
-              access: accessToken
-            }
-          }
+          return userData
         }
         if (otpVerifyExp < now) {
           throw new Error(OTP_MESSAGES.EXPIRED)

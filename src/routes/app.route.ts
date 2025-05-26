@@ -1,6 +1,5 @@
 import AppController from '@/controllers/App.controller'
 import { authHandle } from '@/middlewares/auth'
-import type { ElysiaApp } from '@/app'
 import {
   AddEvent,
   CreateApp,
@@ -11,10 +10,14 @@ import {
   UpdateAppDetails,
   UpdateEvent
 } from '@/types/app.hander'
+import { AnyElysia } from 'elysia'
 
-function registerAppRoutes(app: ElysiaApp, group: string) {
-  app.group(`${group}/app`, (app) => {
+function registerAppRoutes(elysiaApp: AnyElysia, group: string) {
+  elysiaApp.group(`${group}/app`, (app) => {
     app
+      .guard({
+        tags: ['console']
+      })
       .onBeforeHandle(authHandle)
       .post('/create', AppController.createApp, CreateApp)
       .get('/:id', AppController.getApp, GetApp)
@@ -26,8 +29,13 @@ function registerAppRoutes(app: ElysiaApp, group: string) {
     return app
   })
 
-  app.group(`${group}/apps`, (app) => {
-    app.onBeforeHandle(authHandle).get(`/`, AppController.fetchApps, FetchApps)
+  elysiaApp.group(`${group}/apps`, (app) => {
+    app
+      .guard({
+        tags: ['console']
+      })
+      .onBeforeHandle(authHandle)
+      .get(`/`, AppController.fetchApps, FetchApps)
     return app
   })
 }

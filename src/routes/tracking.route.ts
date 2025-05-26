@@ -1,13 +1,17 @@
-import type { ElysiaApp } from '@/app'
 import TrackingController from '@/controllers/Tracking.controller'
 import { allowAllCors } from '@/middlewares/cors'
+import { AnyElysia } from 'elysia'
 
-function registerTrackingRoutes(app: ElysiaApp, group: string) {
-  app.group(group, (app) => {
-    app.onRequest(allowAllCors)
-    app.get('/events', TrackingController.getEvents)
-    app.post('/event', TrackingController.trackEvent)
-    app.post('/session', TrackingController.trackSession)
+function registerTrackingRoutes(elysiaApp: AnyElysia, group: string) {
+  elysiaApp.group(group, (app) => {
+    app
+      .guard({
+        tags: ['public']
+      })
+      .onRequest(allowAllCors)
+      .get('/events', TrackingController.getEvents)
+      .post('/event', TrackingController.trackEvent)
+      .post('/session', TrackingController.trackSession)
     return app
   })
 }

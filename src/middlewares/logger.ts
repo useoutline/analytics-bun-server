@@ -36,6 +36,7 @@ export function logger() {
         logStr.push(String(error.status))
       }
 
+      // @ts-expect-error
       logStr.push(error.message)
       const beforeTime = (store as LoggerStore).beforeTime
       logStr.push(durationString(beforeTime))
@@ -49,16 +50,16 @@ function durationString(beforeTime: bigint) {
   const timeDifference = now - beforeTime
   const nanoseconds = Number(timeDifference)
 
-  const durationInMicroseconds = (nanoseconds / 1e3).toFixed(0) // Convert to microseconds
-  const durationInMilliseconds = (nanoseconds / 1e6).toFixed(0) // Convert to milliseconds
+  const durationInMicroseconds = (nanoseconds / 1_000).toFixed(2) // Convert to microseconds
+  const durationInMilliseconds = (nanoseconds / 1_000_000).toFixed(2) // Convert to milliseconds
   let timeMessage = ''
 
-  if (nanoseconds >= 1e9) {
-    const seconds = (nanoseconds / 1e9).toFixed(2)
+  if (nanoseconds >= 1_000_000_000) {
+    const seconds = (nanoseconds / 1_000_000_000).toFixed(2)
     timeMessage = `${seconds}s`
-  } else if (nanoseconds >= 1e6) {
+  } else if (nanoseconds >= 1_000_000) {
     timeMessage = `${durationInMilliseconds}ms`
-  } else if (nanoseconds >= 1e3) {
+  } else if (nanoseconds >= 1_000) {
     timeMessage = `${durationInMicroseconds}µs`
   } else {
     timeMessage = `${nanoseconds}ns`

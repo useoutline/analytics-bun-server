@@ -6,13 +6,13 @@ import { compression } from '@/middlewares/compression'
 import { allowConsoleCors } from '@/middlewares/cors'
 import { cookie } from '@/middlewares/cookie'
 import type { ElysiaApp } from '@/app'
-import { swagger } from '@elysiajs/swagger'
+import { setSwagger } from '@/middlewares/swagger'
 
-function registerMiddlewares(app: ElysiaApp) {
-  app.use(compression())
-  app.use(logger())
+function registerMiddlewares(elysiaApp: ElysiaApp) {
+  elysiaApp.use(compression())
+  elysiaApp.use(logger())
   if (process.env.NODE_ENV === 'production') {
-    app.use(
+    elysiaApp.use(
       rateLimit({
         max: 50,
         duration: 5000,
@@ -22,30 +22,27 @@ function registerMiddlewares(app: ElysiaApp) {
       })
     )
   }
-  app.use(helmet())
-  app.onRequest(allowConsoleCors)
-  app.use(cookie())
-  app.use(
-    swagger({
-      path: '/',
-      version: '1.0.0',
-      scalarConfig: {
-        darkMode: false
-      },
-      swaggerOptions: {
-        syntaxHighlight: {
-          activate: true
-        }
-      },
-      documentation: {
-        info: {
-          title: 'Outline Analytics API',
-          version: '1.0.0',
-          description: 'API documentation for the application'
-        }
-      }
+  elysiaApp.use(
+    setSwagger({
+      exclude: ['/favicon.ico', '/json', /docs/, /user/, /app/, /apps/]
     })
   )
+  elysiaApp.use(
+    setSwagger({
+      path: '/docs/admin',
+      exclude: [
+        '/favicon.ico',
+        '/json',
+        '/v1/{analyticsId}/event',
+        '/v1/{analyticsId}/session',
+        '/v1/{analyticsId}/events',
+        '/error_codes',
+        '/'
+      ]
+    })
+  )
+  elysiaApp.use(helmet())
+  elysiaApp.use(cookie())
 }
 
 export { registerMiddlewares }

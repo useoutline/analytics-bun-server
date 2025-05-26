@@ -11,22 +11,26 @@ type CorsProps = {
   }
 }
 
-export function allowAllCors({ set }: CorsProps) {
-  set.headers['Access-Control-Allow-Origin'] = '*'
-  set.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, HEAD'
-  set.headers['Access-Control-Allow-Headers'] = '*'
+export function allowAllCors(
+  { set }: CorsProps,
+  data?: { origin?: string; methods?: string; headers?: string }
+) {
+  set.headers['Access-Control-Allow-Origin'] = data?.origin || '*'
+  set.headers['Access-Control-Allow-Methods'] = data?.methods || 'GET, POST, OPTIONS, HEAD'
+  set.headers['Access-Control-Allow-Headers'] = data?.headers || '*'
+  set.headers['Vary'] = 'Origin'
 }
 
 export function allowConsoleCors({ set }: CorsProps) {
   set.headers['Access-Control-Allow-Origin'] = consoleRestrictedOrigin
   set.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS'
-  set.headers['Access-Control-Allow-Headers'] = '*'
+  set.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
   set.headers['Vary'] = 'Origin'
 }
 
 export function allowAdminCors({ set }: CorsProps) {
   set.headers['Access-Control-Allow-Origin'] = adminRestrictedOrigin
   set.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS'
-  set.headers['Access-Control-Allow-Headers'] = '*'
+  set.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
   set.headers['Vary'] = 'Origin'
 }

@@ -1,4 +1,3 @@
-import type { ElysiaApp } from '@/app'
 import UserController from '@/controllers/User.controller'
 import { authHandle } from '@/middlewares/auth'
 import {
@@ -9,18 +8,26 @@ import {
   UpdateUser,
   VerifyOTP
 } from '@/types/user.handler'
+import { AnyElysia } from 'elysia'
 
-function registerUserRoutes(app: ElysiaApp, group: string) {
-  app.group(`${group}/user`, (app) => {
-    app.post('/register', UserController.registerUser, RegisterUser)
-    app.post('/otp/verify', UserController.verifyOTP, VerifyOTP)
-    app.post('/otp/resend', UserController.resendOTP, ResendOTP)
-    app.post('/login', UserController.loginUser, LoginUser)
+function registerUserRoutes(elysiaApp: AnyElysia, group: string) {
+  elysiaApp.group(`${group}/user`, (app) => {
+    app
+      .guard({
+        tags: ['console']
+      })
+      .post('/register', UserController.registerUser, RegisterUser)
+      .post('/otp/verify', UserController.verifyOTP, VerifyOTP)
+      .post('/otp/resend', UserController.resendOTP, ResendOTP)
+      .post('/login', UserController.loginUser, LoginUser)
     return app
   })
 
-  app.group(`${group}/user`, (app) => {
+  elysiaApp.group(`${group}/user`, (app) => {
     app
+      .guard({
+        tags: ['console']
+      })
       .onBeforeHandle(authHandle)
       .patch('/update', UserController.updateUser, UpdateUser)
       .get('/me', UserController.getUser, GetUser)
