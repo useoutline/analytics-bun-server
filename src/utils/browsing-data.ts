@@ -4,8 +4,8 @@ import maxmind from 'maxmind'
 import type { CityResponse } from 'maxmind'
 
 function getUserAgentDetails(headers: HTTPHeaders) {
-  const useragent = headers['user-agent']
-  const outlineBrowser = headers['x-outline-browser']
+  const useragent = headers['user-agent'] as string
+  const outlineBrowser = headers['x-outline-browser'] as string
   const browserDetails = Bowser.parse(useragent)
   return {
     browser: outlineBrowser || browserDetails.browser.name || undefined,
